@@ -17,7 +17,7 @@
 #
 # Copyright (C) 2007 - Klokan Petr Přidal (www.klokan.cz)
 # Copyright (C) 2015 - Alexander Peyser (github.com/apeyser)
-# Copyright (C) 2018 - Oleksii Kyrylchuk (github.com/olety)
+# Copyright (C) 2018 - Oleksii Kyrylchuk (https://github.com/olety)
 #
 # Version history:
 # 0.1 (19.7.2007) Initial version

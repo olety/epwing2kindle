@@ -4,7 +4,7 @@
 # Script for converting an unzipped folder of yomichan json files into a
 # Stardict tabfile. <word>\t<definition>
 #
-# (C) Oleksii Kyrylchuk 2018 (github.com/olety)
+# (C) Oleksii Kyrylchuk 2018 (https://github.com/olety)
 #
 # Version history
 # v0.1 (04.02.2018) Basic functionalities
@@ -84,6 +84,10 @@ def process_folder(foldername):
     # Concatenating the result and returning it
     logging.debug('Concatenating the result array.')
     result = pd.concat(result)
+    # Some extra changes due to how tab2opf treats newlines
+    logging.debug('Changing the newlines from \\n -> \\\\n '
+                  'so tab2opf can read them.')
+    result['def'] = result['def'].str.replace('\n', '\\n')
     logging.debug('Returning the result dataframe.')
     return result
 
@@ -129,11 +133,11 @@ if __name__ == '__main__':
     pd.set_option('max_colwidth', 100)  # for debug
     logging.debug('Finished setting pandas options.')
 
-    # Starting processing
+    # Processing
     logging.debug('Starting processing the source data...')
     result = process_folder(args.folder)
+    logging.debug('Finished processing the source data...')
 
-    result['def'] = result['def'].str.replace('\n', '\\n')
     # Saving the results
     logging.info(f'Saving the results to {args.output.name}...')
     result.to_csv(args.output, header=False, index=False, sep='\t',
