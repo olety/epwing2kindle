@@ -40,7 +40,7 @@
 # Boston, MA 02111-1307, USA.
 
 # VERSION
-VERSION = "0.2"
+VERSION = "0.2.1"
 
 import sys
 import os

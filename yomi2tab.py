@@ -1,4 +1,31 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Script for converting an unzipped folder of yomichan json files into a
+# Stardict tabfile. <word>\t<definition>
+#
+# (C) Oleksii Kyrylchuk 2018 (github.com/olety)
+#
+# Version history
+# v0.1 (04.02.2018) Basic functionalities
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+VERSION = '0.1'
+
 import pprint
 import pandas as pd
 import argparse
@@ -65,7 +92,8 @@ if __name__ == '__main__':
     # Parsing the args
     parser = argparse.ArgumentParser(
         description='Converts EPWINGS dictionaries from yomichan zipped json '
-        'into a tab-separated format that can be used with tab2opf.',
+        'into a tab-separated format that can be used with tab2opf. '
+        'Version {VERSION}',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # Source files
