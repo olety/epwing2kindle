@@ -1,10 +1,14 @@
 # Convert EPWING dictionaries to a kindle-readable format (Japanese)
 
-<img src="demo.jpeg" alt="Result demonstration" style="width: 300px; display: block;"/>
-_Demonstration of the final result_
+<img src="images/demo.jpeg" alt="Result demonstration" style="width: 300px; display: block;"/>
+
+*Demonstration of the final result*
 
 ## Process description
 
+![Process flowchart](images/flowchart.svg)
+
+In order to convert an EPWING dictionary to kindle, you first have to convert it ...
 
 ## Usage
 
@@ -25,7 +29,7 @@ _Demonstration of the final result_
 
 ```
 pip3 install -r requirements.txt
-python3 yomi2tab.py -fl data -o test_p.tab
+python3 yomi2tab.py -o dict.tab data
 ```
 
 ### Tab to OPF (tab2opf)
@@ -33,20 +37,20 @@ python3 yomi2tab.py -fl data -o test_p.tab
 This repository provides a japanese-specific tab2opf tool with some improvements (adding progress indicators, correct display of `<`/`>`, etc.). It is based on https://github.com/apeyser/tab2opf by Alexander Peyser from 2015 which itself is based on the generally available tab2opf.py by Klokan Petr Přidal (www.klokan.cz) from 2007.
 
 ```
-python3 tab2opf.py -s jp -t jp test_p.tab
+python3 tab2opf.py dict.tab
 ```
 
 ## OPF to mobi (kindlegen)
 
 ```
-kindlegen -verbose test_p.opf
+kindlegen opf/dict.opf
 ```
 
 Then you can import your .mobi file into [calibre](https://calibre-ebook.com) to edit the metadata, add the cover picture and send it to kindle.
 
 ## Miscellaneous
 
-### Other way to convert epwing
+### Another way to convert epwing
 
 We can also use the noj format as an intermediary between the EPWING dictionary and the tab file. 
 
