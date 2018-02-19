@@ -10,6 +10,8 @@
 
 In order to convert an EPWING dictionary to kindle, you first have to follow the process displayed above: first you convert the EPWING to a stardict format (TAB-separated), then using tab2opf you can convert it to opf (html) dictionary and then generate a mobi file using kindlegen.
 
+*Note*: this process was tested using 大辞林三省堂, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. 
+
 ## Usage
 
 ### Requirements: 
