@@ -1,10 +1,14 @@
 # Convert EPWING dictionaries to a kindle-readable format (Japanese)
 
-<img src="images/demo.jpeg" alt="Result demonstration" width="250" />
+<p align="center">
+<img src="images/demo.jpeg" alt="Result demonstration" width="450" />
+<br/>
+<sup>Demonstration of the final result</sup>
+</p>
 
-*Demonstration of the final result*
 
-#Table of Contents
+
+# Table of Contents
 
 
   * [Todo](#todo)
