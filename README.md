@@ -6,15 +6,12 @@
 <sup>Demonstration of the final result</sup>
 </p>
 
-
-
 # Table of Contents
-
 
   * [Todo](#todo)
   * [Process description](#process-description)
   * [Usage](#usage)
-     * [Requirements:](#requirements)
+     * [Requirements](#requirements)
      * [EPWING to JSON (yomichan)](#epwing-to-json-yomichan)
      * [JSON to Tab (yomi2tab)](#json-to-tab-yomi2tab)
      * [Tab to OPF (tab2opf)](#tab-to-opf-tab2opf)
@@ -40,13 +37,11 @@
 
 *Note*: this process was tested using スーパー大辞林, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
 
-
 ## Process description
 
 ![Process flowchart](images/flowchart.svg)
 
 In order to convert an EPWING dictionary to kindle, you first have to follow the process displayed above: first you convert the EPWING to a stardict format (TAB-separated), then using tab2opf you can convert it to opf (html) dictionary and then generate a mobi file using kindlegen.
-
 
 ## Usage
 
