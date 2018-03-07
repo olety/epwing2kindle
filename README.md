@@ -57,9 +57,13 @@ In order to convert an EPWING dictionary to kindle, you first have to follow the
 ```
 ./yomichan-import
 ```
+[Yomichan-import](https://github.com/FooSoft/yomichan-import/) is a great app that utilizes [zero-epwing](https://github.com/FooSoft/zero-epwing) to convert EPWING data into much more easily parseable JSON files.
+
+**Note for Windows users**: Because zero-epwing does not support non-ASCII characters (like the Japanese ones), yomichan-import won't work if you have any of them in your CATALOGS path. It should work just fine on unix systems.
+
 <br>
 <p align="center">
-<img src="images/yomichan-import.png" alt="Result demonstration" width="450" />
+<img src="images/yomichan-import.png" alt="Result demonstration" width="450" /></br>
 <sup>How to use yomichan-import</sup>
 </p>
 
