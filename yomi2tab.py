@@ -102,21 +102,19 @@ def process_folder(foldername, simplify):
             by='reading', ascending=False).reset_index(drop=True)
 
         # Transforming the def field + deleting dupes
+        # Merging the definitions
         if simplify:
             logging.debug('Simplifying the definitions.')
             df['def'] = df['def'].apply(transform_simplify)
         else:
             logging.debug('Transforming the definition into one string.')
             df['def'] = df['def'].apply(lambda x: '\n'.join(x))
-
+        # Making mixed kanji/kanakana words display properly
         df = df.apply(process_katakana_kanji, axis=1)
         df['word'] = df['word'].apply(clean_word_starts)
-
+        # Deleting dupes
         logging.debug('Deleting duplicates.')
         df.drop_duplicates(inplace=True)
-        # if np.any(df['word'].str.startswith('―')):
-        #     print(df[df['word'].str.startswith('―')])
-        #     sys.exit()
         logging.debug('Appending the dataframe to the result array.')
         result.append(df)
 
@@ -127,6 +125,7 @@ def process_folder(foldername, simplify):
     logging.debug('Changing the newlines from \\n -> \\\\n '
                   'so tab2opf can read them.')
     result['def'] = result['def'].str.replace('\n', '\\n')
+    # Maybe use a special sort for japanese characters?
     result = result.sort_values(by='word').reset_index()
     logging.debug('Returning the result dataframe.')
     return result
@@ -151,16 +150,16 @@ def process_katakana_kanji(row):
     # Reading structure: [Kanji/Hiragana]Katakana[Kanji/Hiragana]
     # ― is a special symbol (not dash -)
     # row[0] = word; row[1] = reading; row[2] = defn
-
     if '―' in row[0]:
         try:
             is_ktk = [is_katakana(character) for character in row[1]]
-
+            # Finding the start/end of the katakana chunk
+            # There should be a more efficient way to do this
             ktk_start = is_ktk.index(True)
             ktk_end = len(row[1]) - is_ktk[::-1].index(True)
-
+            # Getting the leading/trailing kanji
             kanji = row[0].split('―')
-
+            # Modifying the word itself by replacing hiragana with kanji
             row[0] = kanji[0] + row[1][ktk_start:ktk_end] + kanji[1]
         except:
             pass
