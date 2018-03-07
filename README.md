@@ -8,7 +8,9 @@
 
 ![Process flowchart](images/flowchart.svg)
 
-In order to convert an EPWING dictionary to kindle, you first have to convert it ...
+In order to convert an EPWING dictionary to kindle, you first have to follow the process displayed above: first you convert the EPWING to a stardict format (TAB-separated), then using tab2opf you can convert it to opf (html) dictionary and then generate a mobi file using kindlegen.
+
+*Note*: this process was tested using 大辞林第三版, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. 
 
 ## Usage
 
@@ -32,6 +34,8 @@ pip3 install -r requirements.txt
 python3 yomi2tab.py -o dict.tab data
 ```
 
+Yomichan-import generates an archive file, that you have to unzip into a folder (called `data` in the above example) for `yomi2tab` to work.
+
 ### Tab to OPF (tab2opf)
 
 This repository provides a japanese-specific tab2opf tool with some improvements (adding progress indicators, correct display of `<`/`>`, etc.). It is based on https://github.com/apeyser/tab2opf by Alexander Peyser from 2015 which itself is based on the generally available tab2opf.py by Klokan Petr Přidal (www.klokan.cz) from 2007.
@@ -46,7 +50,9 @@ python3 tab2opf.py dict.tab
 kindlegen opf/dict.opf
 ```
 
-Then you can import your .mobi file into [calibre](https://calibre-ebook.com) to edit the metadata, add the cover picture and send it to kindle.
+In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while but doesn't require any extra work.
+
+After you've generated a .mobi dictionary, you can import it into [calibre](https://calibre-ebook.com) to edit the metadata, add a cover picture and send it to kindle.
 
 ## Miscellaneous
 
