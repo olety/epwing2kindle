@@ -22,6 +22,8 @@
 
 ## Todo
 
+*PR's are welcome!*
+
 - [x] Convert EPWING dictionary to kindle
 - [x] Proper formatting, newlines are rendering as they should be
 - [x] \(mostly) Optional "Simple" mode without old ways to write a word that use outdated kana 
