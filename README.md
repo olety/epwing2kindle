@@ -29,6 +29,7 @@
 - [x] Support kanji when the entry is formatted as `[Kanji/Hiragana]Katakana[K/H]`
 - [x] Multiple entries for the same word (not merging all of the definitions into one; official kindle dictionaries function in this way)
 - [x] Tested with 大辞林
+- [ ] Add a zsh/python script for processing everyhting automatically
 - [ ] Better sorting for multiple entries
 - [ ] Test more dictionaries 
 - [ ] Improve performance (low priority)
