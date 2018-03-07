@@ -23,7 +23,7 @@
 # 0.1 (19.7.2007) Initial version
 # 0.2 (2/2015) Rework removing encoding, runs on python3
 # 0.2.1 (2/2018) Added progress bar, optimized for japanese.
-# 0.2.2 (3/2018) Added docstrings, multiple definitions now render properly
+# 0.2.2 (3/2018) Added docstrings, proper multiple definitions, f-strings, "->'
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -63,9 +63,9 @@ def normalizeLetter(ch):
 
 
 def normalizeUnicode(text):
-    """
+    '''
     Reduce some characters to something else
-    """
+    '''
     return ''.join(normalizeLetter(c) for c in text)
 
 
@@ -77,21 +77,25 @@ def parseargs():
     #  --target: target language code (en by default)
     #  file: the tab delimited file to read
     parser = argparse.ArgumentParser(
-        "tab2opf", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-v", "--verbose", help="make verbose",
-                        action="store_true")
-    parser.add_argument("-m", "--module",
-                        help="Import module for mapping, getkey, getdef")
-    parser.add_argument("-s", "--source", default="ja", help="Source language")
-    parser.add_argument("-t", "--target", default="ja", help="Target language")
-    parser.add_argument("-o", "--output", default="opf", help="Target folder")
-    parser.add_argument("file", help="tab file to input")
+        'tab2opf', formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description=f'Tab2Opf [v{VERSION}] Converts dictionaries from a '
+        'tab-separated Stardict format into OPF/html format that can be '
+        'further be converted to MOBI with kindlegen. Made by '
+        'Klokan Petr Přidal, Alexander Peyser, Oleksii Kyrylchuk.')
+    parser.add_argument('-v', '--verbose', help='make verbose',
+                        action='store_true')
+    parser.add_argument('-m', '--module',
+                        help='Import module for mapping, getkey, getdef')
+    parser.add_argument('-s', '--source', default='ja', help='Source language')
+    parser.add_argument('-t', '--target', default='ja', help='Target language')
+    parser.add_argument('-o', '--output', default='opf', help='Target folder')
+    parser.add_argument('file', help='tab file to input')
     return parser.parse_args()
 
 
 def loadmember(mod, attr, dfault):
     if hasattr(mod, attr):
-        print("Loading {} from {}".format(attr, mod.__name__))
+        print(f'Loading {attr} from {mod.__name__}')
         globals()[attr] = getattr(mod, attr)
     else:
         globals()[attr] = dfault
@@ -103,7 +107,7 @@ def importmod():
         mod = None
     else:
         mod = importlib.import_module(MODULE)
-        print("Loading methods from: {}".format(mod.__file__))
+        print(f'Loading methods from: {mod.__file__}')
 
     loadmember(mod, 'getkey', lambda key: key)
     loadmember(mod, 'getdef', lambda dfn: dfn)
@@ -129,7 +133,7 @@ def readkey(line, defs):
     try:
         term, defn = line.split('\t', 1)
     except ValueError:
-        print("Bad line: '{}'".format(line))
+        print('Bad line: "{}"'.format(line))
         raise
 
     term = term.strip()
@@ -137,6 +141,7 @@ def readkey(line, defs):
     newl = '<br/>\n'
     tab = '&emsp;'
     defn = defn.replace('\\\\', '\\').\
+        replace('"', '\'').\
         replace('>', '&gt; ').\
         replace('<', ' &lt;').\
         replace('（ア）', f'{newl}{tab}（ア）').\
@@ -150,24 +155,24 @@ def readkey(line, defs):
     nkey = normalizeUnicode(term)
     key = getkey(nkey)
     key = key.\
-        replace('"', "'").\
+        replace('"', '\'').\
         replace('<', '&lt;').\
         replace('>', '&gt;').\
         lower().strip()
 
     nkey = nkey.\
-        replace('"', "'").\
+        replace('"', '\'').\
         replace('<', '&lt;').\
         replace('>', '&gt;').\
         lower().strip()
 
     if key == '':
-        raise Exception("Missing key {}".format(term))
+        raise Exception(f'Missing key {term}')
     if defn == '':
-        raise Exception("Missing definition {}".format(term))
+        raise Exception(f'Missing definition {term}')
 
     if VERBOSE:
-        print(key, ":", term)
+        print(key, ':', term)
 
     ndef = [term, defn, key == nkey]
     if key in defs:
@@ -188,7 +193,7 @@ def readkeys():
     Skips empty lines and commented out lines.
     '''
     if VERBOSE:
-        print("Reading {}".format(FILENAME))
+        print('Reading {}'.format(FILENAME))
     with open(FILENAME, 'r', encoding='utf-8') as fr:
         defs = {}
 
@@ -200,15 +205,15 @@ def readkeys():
 @contextmanager
 def writekeyfile(name, i):
     '''
-    Write to key file "{name}{n}.html", put the body inside the context manager.
+    Write to key file '{name}{n}.html', put the body inside the context manager.
     The onclick here gives a kindlegen warning but appears to be necessary to
     actually have a lookup dictionary
     '''
-    fname = os.path.join(args.output, "{}{}.html".format(name, i))
+    fname = os.path.join(args.output, f'{name}{i}.html')
     if VERBOSE:
-        print("Key file: {}".format(fname))
+        print('Key file: {}'.format(fname))
     with open(fname, 'w') as to:
-        to.write("""<?xml version="1.0" encoding="utf-8"?>
+        to.write('''<?xml version="1.0" encoding="utf-8"?>
 <html xmlns:idx="www.mobipocket.com" xmlns:mbp="www.mobipocket.com" xmlns:xlink="http://www.w3.org/1999/xlink">
   <body>
     <mbp:pagebreak/>
@@ -219,15 +224,15 @@ def writekeyfile(name, i):
         </div>
       </mbp:slave-frame>
       <mbp:pagebreak/>
-""")
+''')
         try:
             yield to
         finally:
-            to.write("""
+            to.write('''
     </mbp:frameset>
   </body>
 </html>
-        """)
+        ''')
 
 
 def keyf(defn):
@@ -252,21 +257,21 @@ def writekey(to, key, defn):
     for term, g in groupby(terms, key=lambda d: d[0]):
         for thing in g:
             to.write(
-                """
+                '''
                       <idx:entry name="word" scriptable="yes">
                         <h2>
                           <idx:orth value="{key}">{term}</idx:orth>
                         </h2>
-                """.format(term=term, key=key))
+                '''.format(term=term, key=key))
             # Merge definitions; Added sorting to display japanese results first
             # defn = '<br/><hr>'.join(sorted(ndefn for _, ndefn, _ in g))
             # Fixing the reading error where english definitions
             # generate extra spacing
             # defn.replace('<br/>\n<br/><hr>', '<br/><hr>')
             to.write(thing[1])
-            to.write("""
+            to.write('''
                 </idx:entry>
-            """)
+            ''')
 
     if VERBOSE:
         print(key)
@@ -300,11 +305,11 @@ def openopf(ndicts, name):
     After writing keys, the opf that references all the key files is constructed.
     openopf wraps the contents of writeopf
     '''
-    fname = os.path.join(args.output, "{}.opf".format(name))
+    fname = os.path.join(args.output, f'{name}.opf')
     if VERBOSE:
-        print("Opf: {}".format(fname))
+        print(f'Opf: {fname}')
     with open(fname, 'w') as to:
-        to.write("""<?xml version="1.0"?><!DOCTYPE package SYSTEM "oeb1.ent">
+        to.write('''<?xml version="1.0"?><!DOCTYPE package SYSTEM "oeb1.ent">
 
 <!-- the command line instruction 'prcgen dictionary.opf' will produce the dictionary.prc file in the same folder-->
 <!-- the command line instruction 'mobigen dictionary.opf' will produce the dictionary.mobi file in the same folder-->
@@ -327,15 +332,15 @@ def openopf(ndicts, name):
 
 <!-- list of all the files needed to produce the .prc file -->
 <manifest>
-""".format(name=name, source=INLANG, target=OUTLANG))
+'''.format(name=name, source=INLANG, target=OUTLANG))
 
         yield to
 
-        to.write("""
+        to.write('''
 <tours/>
 <guide> <reference type="search" title="Dictionary Search" onclick= "index_search()"/> </guide>
 </package>
-"""
+'''
                  )
 
 # Write the opf that describes all the key files
@@ -345,23 +350,23 @@ def writeopf(ndicts, name):
     with openopf(ndicts, name) as to:
         for i in range(ndicts):
             to.write(
-                """     <item id="dictionary{ndict}" href="{name}{ndict}.html" media-type="text/x-oeb1-document"/>
-""".format(ndict=i, name=name))
+                '''     <item id="dictionary{ndict}" href="{name}{ndict}.html" media-type="text/x-oeb1-document"/>
+'''.format(ndict=i, name=name))
 
-        to.write("""
+        to.write('''
 </manifest>
 <!-- list of the html files in the correct order  -->
 <spine>
-"""
+'''
                  )
         for i in range(ndicts):
-            to.write("""
+            to.write('''
 	<itemref idref="dictionary{ndict}"/>
-""".format(ndict=i))
+'''.format(ndict=i))
 
-        to.write("""
+        to.write('''
 </spine>
-""")
+''')
 
 ######################################################
 # main
@@ -371,5 +376,5 @@ def writeopf(ndicts, name):
 defns = readkeys()
 name = os.path.splitext(os.path.basename(FILENAME))[0]
 ndicts = writekeys(defns, name)
-print("Writing opf")
+print('Writing opf:')
 writeopf(ndicts, name)

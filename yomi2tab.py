@@ -37,10 +37,10 @@ from tqdm import tqdm
 from functools import partial
 from itertools import compress
 import sys
-import numpy as np
 
 
 def clean_brackets(definition_list):
+    # Add extra spacing for 【 braces that don't have it
     return [defn.replace('【', ' 【')
             if len(defn.split(' 【')) == 1
             else defn
@@ -48,6 +48,7 @@ def clean_brackets(definition_list):
 
 
 def transform_simplify(definition_list):
+    # Remove '-random_katakana' from definitions
     new_def = ''
     for definition in definition_list:
         defn = definition.split('\n')
@@ -63,6 +64,42 @@ def transform_simplify(definition_list):
         # Appending the definition
         new_def += '\n'.join(defn) + '\n'
     return new_def
+
+
+def clean_word_starts(word):
+    # Ending words like -好き have a dash in the beginning
+    # making them unsearcheable
+    word = word.replace('…', '')
+    if word.startswith('−'):
+        word = word[1:]
+    return word
+
+
+def is_katakana(char):
+    # https://en.wikipedia.org/wiki/Katakana_(Unicode_block)
+    return ord('\u30ff') >= ord(char) >= ord('\u30a0')
+
+
+def process_katakana_kanji(row):
+    # Word structure: [Kanji/Hiragana]―[Kanji/Hiragana]
+    # Reading structure: [Kanji/Hiragana]Katakana[Kanji/Hiragana]
+    # ― is a special symbol (not dash -)
+    # row[0] = word; row[1] = reading; row[2] = defn
+    if '―' in row[0]:
+        try:
+            is_ktk = [is_katakana(character) for character in row[1]]
+            # Finding the start/end of the katakana chunk
+            # There should be a more efficient way to do this
+            ktk_start = is_ktk.index(True)
+            ktk_end = len(row[1]) - is_ktk[::-1].index(True)
+            # Getting the leading/trailing kanji
+            kanji = row[0].split('―')
+            # Modifying the word itself by replacing hiragana with kanji
+            row[0] = kanji[0] + row[1][ktk_start:ktk_end] + kanji[1]
+        except:
+            pass
+
+    return row
 
 
 def process_folder(foldername, simplify):
@@ -131,48 +168,12 @@ def process_folder(foldername, simplify):
     return result
 
 
-def clean_word_starts(word):
-    # Ending words like -好き have a dash in the beginning
-    # making them unsearcheable
-    word = word.replace('…', '')
-    if word.startswith('−'):
-        word = word[1:]
-    return word
-
-
-def is_katakana(char):
-    # https://en.wikipedia.org/wiki/Katakana_(Unicode_block)
-    return ord('\u30ff') >= ord(char) >= ord('\u30a0')
-
-
-def process_katakana_kanji(row):
-    # Word structure: [Kanji/Hiragana]―[Kanji/Hiragana]
-    # Reading structure: [Kanji/Hiragana]Katakana[Kanji/Hiragana]
-    # ― is a special symbol (not dash -)
-    # row[0] = word; row[1] = reading; row[2] = defn
-    if '―' in row[0]:
-        try:
-            is_ktk = [is_katakana(character) for character in row[1]]
-            # Finding the start/end of the katakana chunk
-            # There should be a more efficient way to do this
-            ktk_start = is_ktk.index(True)
-            ktk_end = len(row[1]) - is_ktk[::-1].index(True)
-            # Getting the leading/trailing kanji
-            kanji = row[0].split('―')
-            # Modifying the word itself by replacing hiragana with kanji
-            row[0] = kanji[0] + row[1][ktk_start:ktk_end] + kanji[1]
-        except:
-            pass
-
-    return row
-
-
 if __name__ == '__main__':
     # Parsing the args
     parser = argparse.ArgumentParser(
-        description='Converts EPWINGS dictionaries from yomichan zipped json '
-        'into a tab-separated format that can be used with tab2opf. '
-        'Version {VERSION}',
+        description=f'Yomi2Tab [v{VERSION}] Converts EPWINGS dictionaries from '
+        'yomichan zipped json into a tab-separated format that can be '
+        'used with tab2opf (Stardict). Made by Oleksii Kyrylchuk',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # Source files
@@ -183,11 +184,11 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--simplify', action='store_true',
                         help='Simplify definitions. This gets rid of the extra '
                         'archaic readings, which makes the resulting definition'
-                        'easier to read.')
+                        ' easier to read.')
     # Destination
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), nargs='?',
-                        metavar='output_tab', default='epwing.tab',
-                        help='Output file path.')
+                        help='Output file path. Default behaviour: '
+                        'infers the name.', metavar='output_file', default=None)
 
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='Show verbose output.')
@@ -217,9 +218,21 @@ if __name__ == '__main__':
     result = process_folder(args.folder, simplify=args.simplify)
     logging.debug('Finished processing the source data...')
 
+    # Inferring output fname if not set
+    output_file = args.output
+    if not output_file:
+        logging.debug('Trying to infer the dictionary name...')
+        try:
+            with open(os.path.join(args.folder, 'index.json')) as f:
+                index_json = json.load(f)
+                output_file = f'{index_json["title"]}.tab'
+        except:
+            output_file = 'EPWING.tab'
+        logging.debug(f'Obtained file name is {output_file}.')
+
     # Saving the results
-    logging.info(f'Saving the results to {args.output.name}...')
-    result.to_csv(args.output, header=False, index=False, sep='\t',
+    logging.info(f'Saving the results to {output_file}...')
+    result.to_csv(output_file, header=False, index=False, sep='\t',
                   encoding='utf-8', columns=['word', 'def'])
-    logging.info(f'Successfully saved the results to {args.output.name}, '
+    logging.info(f'Successfully saved the results to {output_file}, '
                  'quitting the program.')

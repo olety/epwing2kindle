@@ -1,6 +1,7 @@
 data/*
 opf/*
 daijirin/*
+yomi_output/*
 gh-md-toc
 *.csv
 *.tab

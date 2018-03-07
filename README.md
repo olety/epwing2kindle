@@ -7,18 +7,18 @@
 
 # Table of Contents
 
-  * [Todo](#todo)
-  * [Process description](#process-description)
-  * [Usage](#usage)
-     * [Requirements](#requirements)
-     * [EPWING to JSON (yomichan)](#epwing-to-json-yomichan)
-     * [JSON to Tab (yomi2tab)](#json-to-tab-yomi2tab)
-     * [Tab to OPF (tab2opf)](#tab-to-opf-tab2opf)
-  * [OPF to mobi (kindlegen)](#opf-to-mobi-kindlegen)
-  * [Miscellaneous](#miscellaneous)
-     * [Another way to convert epwing](#another-way-to-convert-epwing)
-     * [Why would you ever do this? Kindle offers free builtin dictionaries!](#why-would-you-ever-do-this-kindle-offers-free-builtin-dictionaries)
-     * [Shoutouts](#shoutouts)
+* [Todo](#todo)
+* [Process description](#process-description)
+* [Usage guide](#usage)
+	* [Requirements](#requirements)
+	* [EPWING to JSON (yomichan)](#epwing-to-json-yomichan)
+	* [JSON to Tab (yomi2tab)](#json-to-tab-yomi2tab)
+	* [Tab to OPF (tab2opf)](#tab-to-opf-tab2opf)
+	* [OPF to mobi (kindlegen)](#opf-to-mobi-kindlegen)
+* [Miscellaneous](#miscellaneous)
+	* [Another way to convert epwing](#another-way-to-convert-epwing)
+	* [Why would you ever do this? Kindle offers free builtin dictionaries!](#why-would-you-ever-do-this-kindle-offers-free-builtin-dictionaries)
+	* [Shoutouts](#shoutouts)
 
 ## Todo
 
@@ -43,7 +43,7 @@
 
 In order to convert an EPWING dictionary to kindle, you first have to follow the process displayed above: first you convert the EPWING to a stardict format (TAB-separated), then using tab2opf you can convert it to opf (html) dictionary and then generate a mobi file using kindlegen.
 
-## Usage
+## Usage guide
 
 ### Requirements: 
 
@@ -71,20 +71,22 @@ In order to convert an EPWING dictionary to kindle, you first have to follow the
 
 ```
 pip3 install -r requirements.txt
-python3 yomi2tab.py -o dict.tab data
+python3 yomi2tab.py -o mydict.tab yomi_output/
 ```
 
-Yomichan-import generates an archive file, that you have to unzip into a folder (called `data` in the above example) for `yomi2tab` to work.
+Yomichan-import generates an archive file, that you have to unzip into a folder (called `yomi_output` in the above example) for `yomi2tab` to work. You can also use the `./yomi2tab.py -h` flag to see all possible usage options.
 
 ### Tab to OPF (tab2opf)
 
+```
+python3 tab2opf.py mydict.tab
+```
+
+Running this command will create a folder called `opf/` that will contain the opf/html dictionary you can use in the next step.
+
 This repository provides a japanese-specific tab2opf tool with some improvements (adding progress indicators, correct display of `<`/`>`, etc.). It is based on https://github.com/apeyser/tab2opf by Alexander Peyser from 2015 which itself is based on the generally available tab2opf.py by Klokan Petr Přidal (www.klokan.cz) from 2007.
 
-```
-python3 tab2opf.py dict.tab
-```
-
-## OPF to mobi (kindlegen)
+### OPF to mobi (kindlegen)
 
 ```
 kindlegen opf/dict.opf
