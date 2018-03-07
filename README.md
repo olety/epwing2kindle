@@ -50,7 +50,7 @@ In order to convert an EPWING dictionary to kindle, you first have to follow the
 - [python 3.6 or higher](https://www.python.org/)
 - [yomichan-import](https://foosoft.net/projects/yomichan-import/)
 - [kindlegen](https://www.amazon.com/gp/feature.html?docId=1000765211)
-- `pip3 install -r requirements.txt` for python requirements
+- `pip3 install -r requirements.txt` or `conda install --file requirements.txt` for python requirements
 
 ### EPWING to JSON (yomichan)
 
