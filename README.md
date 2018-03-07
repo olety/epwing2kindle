@@ -1,8 +1,7 @@
 # Convert EPWING dictionaries to a kindle-readable format (Japanese)
 
 <p align="center">
-<img src="images/demo.jpeg" alt="Result demonstration" width="450" />
-<br/>
+<img src="images/demo.jpeg" alt="Result demonstration" width="450" /><br/>
 <sup>Demonstration of the final result</sup>
 </p>
 
@@ -58,6 +57,11 @@ In order to convert an EPWING dictionary to kindle, you first have to follow the
 ```
 ./yomichan-import
 ```
+<br>
+<p align="center">
+<img src="images/yomichan-import.png" alt="Result demonstration" width="450" />
+<sup>How to use yomichan-import</sup>
+</p>
 
 ### JSON to Tab (yomi2tab)
 
