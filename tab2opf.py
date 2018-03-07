@@ -23,6 +23,7 @@
 # 0.1 (19.7.2007) Initial version
 # 0.2 (2/2015) Rework removing encoding, runs on python3
 # 0.2.1 (2/2018) Added progress bar, optimized for japanese.
+# 0.2.2 (3/2018) Added docstrings, multiple definitions now render properly
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -40,7 +41,7 @@
 # Boston, MA 02111-1307, USA.
 
 # VERSION
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 import sys
 import os
@@ -50,11 +51,10 @@ from contextlib import contextmanager
 from tqdm import tqdm
 import importlib
 
-# Stop with the encoding -- it's broken anyhow
-# in the kindles and undefined.
-
 
 def normalizeLetter(ch):
+    # Stop with the encoding -- it's broken anyhow
+    # in the kindles and undefined.
     try:
         ch = mapping[ch]
     except KeyError:
@@ -68,15 +68,14 @@ def normalizeUnicode(text):
     """
     return ''.join(normalizeLetter(c) for c in text)
 
-# Args:
-#  --verbose
-#  --module: module to load and attempt to extract getdef, getkey & mapping
-#  --source: source language code (en by default)
-#  --target: target language code (en by default)
-#  file: the tab delimited file to read
-
 
 def parseargs():
+    # Args:
+    #  --verbose
+    #  --module: module to load and attempt to extract getdef, getkey & mapping
+    #  --source: source language code (en by default)
+    #  --target: target language code (en by default)
+    #  file: the tab delimited file to read
     parser = argparse.ArgumentParser(
         "tab2opf", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-v", "--verbose", help="make verbose",
@@ -121,24 +120,31 @@ INLANG = args.source
 OUTLANG = args.target
 importmod()
 
-# add a single [term, definition]
-# to defs[key]
-# r is a tab split line
 
-
-def readkey(r, defs):
+def readkey(line, defs):
+    '''
+    Add a single [term, definition] to the defs[key] dictionary.
+    line is a tab split line to be parsed.
+    '''
     try:
-        term, defn = r.split('\t', 1)
+        term, defn = line.split('\t', 1)
     except ValueError:
-        print("Bad line: '{}'".format(r))
+        print("Bad line: '{}'".format(line))
         raise
 
     term = term.strip()
     defn = getdef(defn)
-    defn = defn.replace("\\\\", "\\").\
-        replace(">", "&gt;").\
-        replace("<", "&lt;").\
-        replace("\\n", "<br/>\n").\
+    newl = '<br/>\n'
+    tab = '&emsp;'
+    defn = defn.replace('\\\\', '\\').\
+        replace('>', '&gt; ').\
+        replace('<', ' &lt;').\
+        replace('（ア）', f'{newl}{tab}（ア）').\
+        replace('（イ）', f'{newl}{tab}（イ）').\
+        replace('（ウ）', f'{newl}{tab}（ウ）').\
+        replace('（エ）', f'{newl}{tab}（エ）').\
+        replace('（オ）', f'{newl}{tab}（オ）').\
+        replace('\\n', newl).\
         strip()
 
     nkey = normalizeUnicode(term)
@@ -169,37 +175,35 @@ def readkey(r, defs):
     else:
         defs[key] = [ndef]
 
-# Skip empty lines and lines that only have a comment
-
 
 def inclline(s):
+    ''' Filter that skips empty lines and lines that only have a comment '''
     s = s.lstrip()
     return len(s) != 0 and s[0] != '#'
 
-# Iterate over FILENAME, reading lines of
-# term {tab} definition
-# skips empty lines and commented out lines
-#
-
 
 def readkeys():
+    '''
+    Iterate over FILENAME, reading lines formatted like "term {tab} definition".
+    Skips empty lines and commented out lines.
+    '''
     if VERBOSE:
         print("Reading {}".format(FILENAME))
     with open(FILENAME, 'r', encoding='utf-8') as fr:
-        defns = {}
-        for r in tqdm(filter(inclline, fr), unit='keys', desc='Reading keys'):
-            readkey(r, defns)
-        return defns
+        defs = {}
 
-# Write to key file {name}{n}.html
-# put the body inside the context manager
-# The onclick here gives a kindlegen warning
-# but appears to be necessary to actually
-# have a lookup dictionary
+        for line in tqdm(filter(inclline, fr), unit='keys', desc='Reading keys'):
+            readkey(line, defs)
+        return defs
 
 
 @contextmanager
 def writekeyfile(name, i):
+    '''
+    Write to key file "{name}{n}.html", put the body inside the context manager.
+    The onclick here gives a kindlegen warning but appears to be necessary to
+    actually have a lookup dictionary
+    '''
     fname = os.path.join(args.output, "{}{}.html".format(name, i))
     if VERBOSE:
         print("Key file: {}".format(fname))
@@ -225,12 +229,12 @@ def writekeyfile(name, i):
 </html>
         """)
 
-# Order definitions by keys, then by whether the key
-# matches the original term, then by length of term
-# then alphabetically
-
 
 def keyf(defn):
+    '''
+    Order definitions by keys, then by whether the key matches the original
+    term, then by length of term then alphabetically.
+    '''
     term = defn[0]
     if defn[2]:
         l = 0
@@ -238,41 +242,47 @@ def keyf(defn):
         l = len(term)
     return l, term
 
-# Write into to the key, definition pairs
-# key -> [[term, defn, key==term]]
-
 
 def writekey(to, key, defn):
+    '''
+    Write into to the key, definition pairs
+        key -> [[term, defn, key==term]]
+    '''
     terms = iter(sorted(defn, key=keyf))
     for term, g in groupby(terms, key=lambda d: d[0]):
-        to.write(
-            """
-      <idx:entry name="word" scriptable="yes">
-        <h2>
-          <idx:orth value="{key}">{term}</idx:orth>
-        </h2>
-""".format(term=term, key=key))
-
-        to.write('; '.join(ndefn for _, ndefn, _ in g))
-        to.write(
-            """
-      </idx:entry>
-"""
-        )
+        for thing in g:
+            to.write(
+                """
+                      <idx:entry name="word" scriptable="yes">
+                        <h2>
+                          <idx:orth value="{key}">{term}</idx:orth>
+                        </h2>
+                """.format(term=term, key=key))
+            # Merge definitions; Added sorting to display japanese results first
+            # defn = '<br/><hr>'.join(sorted(ndefn for _, ndefn, _ in g))
+            # Fixing the reading error where english definitions
+            # generate extra spacing
+            # defn.replace('<br/>\n<br/><hr>', '<br/><hr>')
+            to.write(thing[1])
+            to.write("""
+                </idx:entry>
+            """)
 
     if VERBOSE:
         print(key)
 
-# Write all the keys, where defns is a map of
-# key --> [[term, defn, key==term]...]
-# and name is the basename
-# The files are split so that there are no more than
-# 10,000 keys written to each file (why?? I dunno)
-#
-# Returns the number of files.
-
 
 def writekeys(defns, name):
+    '''
+    Write all the keys, where defns is a map of
+        key --> [[term, defn, key==term]...]
+    and name is the basename.
+
+    The files are split so that there are no more than 10,000 keys written
+    to each file. (why?? I dunno. Probably to reduce lag when opening them.)
+
+    Returns the number of files.
+    '''
     keyit = iter(sorted(defns))
     for j in tqdm(count(), unit='files', desc='Writing html'):
         with writekeyfile(name, j) as to:
@@ -283,14 +293,13 @@ def writekeys(defns, name):
                 writekey(to, key, defns[key])
     return j + 1
 
-# After writing keys, the opf that references all the key files
-# is constructed.
-# openopf wraps the contents of writeopf
-#
-
 
 @contextmanager
 def openopf(ndicts, name):
+    '''
+    After writing keys, the opf that references all the key files is constructed.
+    openopf wraps the contents of writeopf
+    '''
     fname = os.path.join(args.output, "{}.opf".format(name))
     if VERBOSE:
         print("Opf: {}".format(fname))

@@ -8,6 +8,7 @@
 #
 # Version history
 # v0.1 (04.02.2018) Basic functionalities
+# v0.2 (07.03.2018) Added proper katakana/kanji words processing, simplify mode
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -24,7 +25,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 import pprint
 import pandas as pd
@@ -34,10 +35,37 @@ import json
 import os
 from tqdm import tqdm
 from functools import partial
+from itertools import compress
 import sys
+import numpy as np
 
 
-def process_folder(foldername):
+def clean_brackets(definition_list):
+    return [defn.replace('【', ' 【')
+            if len(defn.split(' 【')) == 1
+            else defn
+            for defn in definition_list]
+
+
+def transform_simplify(definition_list):
+    new_def = ''
+    for definition in definition_list:
+        defn = definition.split('\n')
+        # Processing the header
+        header = defn[0].split(' ')
+        try:
+            if header[1][0] == '―':
+                header = [header[0]] + header[2:]
+        except:
+            pass
+        defn[0] = ' '.join(header).replace('-', '')
+
+        # Appending the definition
+        new_def += '\n'.join(defn) + '\n'
+    return new_def
+
+
+def process_folder(foldername, simplify):
     logging.debug(f'Starting processing the folder {foldername}...')
     logging.debug('Initializing variables...')
     result = []
@@ -56,8 +84,8 @@ def process_folder(foldername):
         logging.debug(f'Successfully read the file {file_path}...')
 
         logging.debug('Selecting the correct columns...')
-        df.columns = ['word', 'reading', 'unk1',
-                      'unk2', 'unk3', 'def', 'id', 'unk4']
+        df.columns = ['word', 'reading', 'unknown1', 'unknown2',
+                      'unknown3', 'def', 'id', 'unknown4']
         df = df[['word', 'reading', 'def']]
         logging.debug(f'Selected the columns {df.columns.values}...')
 
@@ -74,10 +102,21 @@ def process_folder(foldername):
             by='reading', ascending=False).reset_index(drop=True)
 
         # Transforming the def field + deleting dupes
-        logging.debug('Transforming the definition into one string.')
-        df['def'] = df['def'].apply(lambda x: ' '.join(x))
+        if simplify:
+            logging.debug('Simplifying the definitions.')
+            df['def'] = df['def'].apply(transform_simplify)
+        else:
+            logging.debug('Transforming the definition into one string.')
+            df['def'] = df['def'].apply(lambda x: '\n'.join(x))
+
+        df = df.apply(process_katakana_kanji, axis=1)
+        df['word'] = df['word'].apply(clean_word_starts)
+
         logging.debug('Deleting duplicates.')
         df.drop_duplicates(inplace=True)
+        # if np.any(df['word'].str.startswith('―')):
+        #     print(df[df['word'].str.startswith('―')])
+        #     sys.exit()
         logging.debug('Appending the dataframe to the result array.')
         result.append(df)
 
@@ -88,8 +127,45 @@ def process_folder(foldername):
     logging.debug('Changing the newlines from \\n -> \\\\n '
                   'so tab2opf can read them.')
     result['def'] = result['def'].str.replace('\n', '\\n')
+    result = result.sort_values(by='word').reset_index()
     logging.debug('Returning the result dataframe.')
     return result
+
+
+def clean_word_starts(word):
+    # Ending words like -好き have a dash in the beginning
+    # making them unsearcheable
+    word = word.replace('…', '')
+    if word.startswith('−'):
+        word = word[1:]
+    return word
+
+
+def is_katakana(char):
+    # https://en.wikipedia.org/wiki/Katakana_(Unicode_block)
+    return ord('\u30ff') >= ord(char) >= ord('\u30a0')
+
+
+def process_katakana_kanji(row):
+    # Word structure: [Kanji/Hiragana]―[Kanji/Hiragana]
+    # Reading structure: [Kanji/Hiragana]Katakana[Kanji/Hiragana]
+    # ― is a special symbol (not dash -)
+    # row[0] = word; row[1] = reading; row[2] = defn
+
+    if '―' in row[0]:
+        try:
+            is_ktk = [is_katakana(character) for character in row[1]]
+
+            ktk_start = is_ktk.index(True)
+            ktk_end = len(row[1]) - is_ktk[::-1].index(True)
+
+            kanji = row[0].split('―')
+
+            row[0] = kanji[0] + row[1][ktk_start:ktk_end] + kanji[1]
+        except:
+            pass
+
+    return row
 
 
 if __name__ == '__main__':
@@ -104,7 +180,11 @@ if __name__ == '__main__':
     parser.add_argument(type=str, metavar='path', dest='folder',
                         help='Path to the unzipped yomichan-import '
                         'archive folder with json files.')
-
+    # Simplify defs
+    parser.add_argument('-s', '--simplify', action='store_true',
+                        help='Simplify definitions. This gets rid of the extra '
+                        'archaic readings, which makes the resulting definition'
+                        'easier to read.')
     # Destination
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), nargs='?',
                         metavar='output_tab', default='epwing.tab',
@@ -135,7 +215,7 @@ if __name__ == '__main__':
 
     # Processing
     logging.debug('Starting processing the source data...')
-    result = process_folder(args.folder)
+    result = process_folder(args.folder, simplify=args.simplify)
     logging.debug('Finished processing the source data...')
 
     # Saving the results

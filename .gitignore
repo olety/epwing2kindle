@@ -1,5 +1,9 @@
 data/*
-test.csv
+opf/*
+daijirin/*
+gh-md-toc
+*.csv
+*.tab
 
 
 # Created by https://www.gitignore.io/api/macos,python
