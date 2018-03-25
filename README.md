@@ -7,37 +7,19 @@
 
 # Table of Contents
 
-* [Todo](#todo)
 * [Process description](#process-description)
-* [Usage guide](#usage)
+* [Usage guide](#usage-guide)
 	* [Requirements](#requirements)
 	* [EPWING to JSON (yomichan)](#epwing-to-json-yomichan)
 	* [JSON to Tab (yomi2tab)](#json-to-tab-yomi2tab)
 	* [Tab to OPF (tab2opf)](#tab-to-opf-tab2opf)
 	* [OPF to mobi (kindlegen)](#opf-to-mobi-kindlegen)
+* [Todo](#todo)
 * [Miscellaneous](#miscellaneous)
 	* [Another way to convert epwing](#another-way-to-convert-epwing)
 	* [Why would you ever do this? Kindle offers free builtin dictionaries!](#why-would-you-ever-do-this-kindle-offers-free-builtin-dictionaries)
 	* [Shoutouts](#shoutouts)
 
-## Todo
-
-*PR's are welcome!*
-
-- [x] Convert EPWING dictionary to kindle
-- [x] Proper formatting, newlines are rendering as they should be
-- [x] \(mostly) Optional "Simple" mode without old ways to write a word that use outdated kana 
-- [x] Support kanji when the entry is formatted as `[Kanji/Hiragana]Katakana[K/H]`
-- [x] Multiple entries for the same word (not merging all of the definitions into one; official kindle dictionaries function in this way)
-- [x] Tested with 大辞林
-- [ ] Add a zsh/python script for processing everything automatically
-- [ ] Better sorting for multiple entries
-- [ ] Test more dictionaries 
-- [ ] Improve performance (low priority)
-- [ ] Make it possible to look up suffixes (stuff like -好き; low priority)
-- [ ] Make it possible to look up phrases with `=` in their key (It's probably another weird EPWING thing; low priority)
-
-*Note*: this process was tested using スーパー大辞林, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
 
 ## Process description
 
@@ -97,6 +79,25 @@ kindlegen opf/dict.opf
 In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while but doesn't require any extra work.
 
 After you've generated a .mobi dictionary, you can import it into [calibre](https://calibre-ebook.com) to edit the metadata, add a cover picture and send it to kindle.
+
+## Todo
+
+*PR's are welcome!*
+
+- [x] Convert EPWING dictionary to kindle
+- [x] Proper formatting, newlines are rendering as they should be
+- [x] \(mostly) Optional "Simple" mode without old ways to write a word that use outdated kana 
+- [x] Support kanji when the entry is formatted as `[Kanji/Hiragana]Katakana[K/H]`
+- [x] Multiple entries for the same word (not merging all of the definitions into one; official kindle dictionaries function in this way)
+- [x] Tested with 大辞林
+- [ ] Add a zsh/python script for processing everything automatically
+- [ ] Better sorting for multiple entries
+- [ ] Test more dictionaries 
+- [ ] Improve performance (low priority)
+- [ ] Make it possible to look up suffixes (stuff like -好き; low priority)
+- [ ] Make it possible to look up phrases with `=` in their key (It's probably another weird EPWING thing; low priority)
+
+*Note*: this process was tested using スーパー大辞林, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
 
 ## Miscellaneous
 
