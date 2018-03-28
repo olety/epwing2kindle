@@ -1,4 +1,4 @@
-# Convert EPWING dictionaries to a kindle-readable format (Japanese)
+# Epwing2Kindle: A guide on how to convert Japanese EPWING dictionaries to a kindle-readable format
 
 <p align="center">
 <img src="images/demo.jpeg" alt="Result demonstration" width="450" /><br/>
