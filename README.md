@@ -58,7 +58,7 @@ pip3 install -r requirements.txt
 python3 yomi2tab.py -o mydict.tab yomi_output/
 ```
 
-Yomichan-import generates an archive file, that you have to unzip into a folder (called `yomi_output` in the above example) for `yomi2tab` to work. You can also use the `./yomi2tab.py -h` flag to see all possible usage options.
+Yomichan-import generates an archive file that you have to unzip into a folder (called `yomi_output` in the above example) for `yomi2tab` to work. You can also use the `./yomi2tab.py -h` flag to see all possible usage options.
 
 ### Tab to OPF (tab2opf)
 
@@ -76,7 +76,7 @@ This repository provides a japanese-specific tab2opf tool with some improvements
 kindlegen opf/dict.opf
 ```
 
-In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while but doesn't require any extra work.
+In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while to convert everything but doesn't require any extra work.
 
 After you've generated a .mobi dictionary, you can import it into [calibre](https://calibre-ebook.com) to edit the metadata, add a cover picture and send it to kindle.
 
