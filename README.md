@@ -138,7 +138,7 @@ If it actually produces the .mobi file at the end those warnings can be ignored;
 
 ### I'm on Windows and having trouble installing the python requirements
 
-Check issue #1 - you may have to install [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2017) to get everything working.
+Check issue [#1](https://github.com/olety/epwing2kindle/issues/1) - you may have to install [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2017) to get everything working.
 
 ### Why would you ever do this? Kindle offers free builtin dictionaries!
 
