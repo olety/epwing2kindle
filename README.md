@@ -146,6 +146,8 @@ Check issue [#1](https://github.com/olety/epwing2kindle/issues/1) - you may have
 
 ### Shoutouts
 
-[Cophnia61](https://forum.koohii.com/user-4654.html) - https://forum.koohii.com/thread-14949.html (I'm not Xavier22 😁 )
+- [Cophnia61](https://forum.koohii.com/user-4654.html) - https://forum.koohii.com/thread-14949.html (I'm not Xavier22 😁 )
+- [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) - *the* TOC generator for github
+- [Xavier22](https://github.com/erikolson97), for helping with the Windows-specific instructions
 
-[gh-md-toc](https://github.com/ekalinin/github-markdown-toc) - *the* TOC generator for github
+And you, if you actually convert your epwing to mobi! 😊
