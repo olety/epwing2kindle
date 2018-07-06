@@ -134,7 +134,7 @@ Also, please check closed issues before opening a new one, maybe your problem wa
 
 ### Kindlegen is throwing weird warnings!
 
-If it actually produces the .mobi file at the end those warnings can be ignored; try putting the resulting dictionary on your kindle first and check if you can look up words. If not, open an [issue](https://github.com/olety/epwing2kindle/issues) :)
+If it actually produces a .mobi file at the end those warnings can be ignored; try putting the resulting dictionary on your kindle first and check if you can look up words. If not, open an [issue](https://github.com/olety/epwing2kindle/issues) :)
 
 ### I'm on Windows and having trouble installing the python requirements
 
