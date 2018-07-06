@@ -7,18 +7,21 @@
 
 # Table of Contents
 
-* [Process description](#process-description)
-* [Usage guide](#usage-guide)
-	* [Requirements](#requirements)
-	* [EPWING to JSON (yomichan)](#epwing-to-json-yomichan)
-	* [JSON to Tab (yomi2tab)](#json-to-tab-yomi2tab)
-	* [Tab to OPF (tab2opf)](#tab-to-opf-tab2opf)
-	* [OPF to mobi (kindlegen)](#opf-to-mobi-kindlegen)
-* [Todo](#todo)
-* [Miscellaneous](#miscellaneous)
-	* [Another way to convert epwing](#another-way-to-convert-epwing)
-	* [Why would you ever do this? Kindle offers free builtin dictionaries!](#why-would-you-ever-do-this-kindle-offers-free-builtin-dictionaries)
-	* [Shoutouts](#shoutouts)
+- [Process description](#process-description)
+- [Usage guide](#usage-guide)
+	- [1. Install the requirements](#1-install-the-requirements)
+	- [2. EPWING to JSON (yomichan)](#2-epwing-to-json-yomichan)
+	- [3. JSON to Tab (yomi2tab)](#3-json-to-tab-yomi2tab)
+	- [4. Tab to OPF (tab2opf)](#4-tab-to-opf-tab2opf)
+	- [5. OPF to mobi (kindlegen)](#5-opf-to-mobi-kindlegen)
+- [Todo](#todo)
+- [Another way to convert epwing](#another-way-to-convert-epwing)
+- [Miscellaneous](#miscellaneous)
+	- [Something isn't working!](#something-isnt-working)
+	- [Kindlegen is throwing weird warnings!](#kindlegen-is-throwing-weird-warnings)
+	- [I'm on Windows and having trouble installing the python requirements](#im-on-windows-and-having-trouble-installing-the-python-requirements)
+	- [Why would you ever do this? Kindle offers free builtin dictionaries!](#why-would-you-ever-do-this-kindle-offers-free-builtin-dictionaries)
+	- [Shoutouts](#shoutouts)
 
 
 ## Process description
@@ -29,14 +32,21 @@ In order to convert an EPWING dictionary to kindle, you have to follow the proce
 
 ## Usage guide
 
-### Requirements: 
+### 1. Install the requirements
 
 - [python 3.6 or higher](https://www.python.org/)
 - [yomichan-import](https://foosoft.net/projects/yomichan-import/)
 - [kindlegen](https://www.amazon.com/gp/feature.html?docId=1000765211)
-- `pip3 install -r requirements.txt` or `conda install --file requirements.txt` for python requirements
 
-### EPWING to JSON (yomichan)
+
+You can use either pip or [conda](https://www.anaconda.com/download/) to install the python requirements:
+
+```
+pip3 install -r requirements.txt
+conda install --file requirements.txt
+```
+
+### 2. EPWING to JSON (yomichan)
 
 ```
 ./yomichan-import
@@ -51,29 +61,30 @@ In order to convert an EPWING dictionary to kindle, you have to follow the proce
 <sup>How to use yomichan-import</sup>
 </p>
 
-### JSON to Tab (yomi2tab)
 
+### 3. JSON to Tab (yomi2tab)
 ```
-pip3 install -r requirements.txt
-python3 yomi2tab.py -o mydict.tab yomi_output/
+(Unix)    python3 yomi2tab.py -o mydict.tab yomi_output/
+(Windows) py -3 yomi2tab.py -o mydict.tab "C:\YOUR_PATH_HERE\yomi_output"
 ```
 
 Yomichan-import generates an archive file that you have to unzip into a folder (called `yomi_output` in the above example) for `yomi2tab` to work. You can also use the `./yomi2tab.py -h` flag to see all possible usage options.
 
-### Tab to OPF (tab2opf)
+### 4. Tab to OPF (tab2opf)
 
 ```
-python3 tab2opf.py mydict.tab
+(Unix)    python3 tab2opf.py mydict.tab
+(Windows) py -3 tab2opf.py mydict.tab
 ```
 
 Running this command will create a folder called `opf/` that will contain the opf/html dictionary you can use in the next step.
 
 This repository provides a japanese-specific tab2opf tool with some improvements (adding progress indicators, correct display of `<`/`>`, etc.). It is based on https://github.com/apeyser/tab2opf by Alexander Peyser from 2015 which itself is based on the generally available tab2opf.py by Klokan Petr Přidal (www.klokan.cz) from 2007.
 
-### OPF to mobi (kindlegen)
+### 5. OPF to mobi (kindlegen)
 
 ```
-kindlegen opf/dict.opf
+kindlegen opf/mydict.opf
 ```
 
 In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while to convert everything but doesn't require any extra work.
@@ -86,24 +97,23 @@ After you've generated a .mobi dictionary, you can import it into [calibre](http
 
 - [x] Convert EPWING dictionary to kindle
 - [x] Proper formatting, newlines are rendering as they should be
-- [x] \(mostly) Optional "Simple" mode without old ways to write a word that use outdated kana 
+- [x] \(mostly) Optional "Simple" mode without old ways to write a word that use outdated kana
 - [x] Support kanji when the entry is formatted as `[Kanji/Hiragana]Katakana[K/H]`
 - [x] Multiple entries for the same word (not merging all of the definitions into one; official kindle dictionaries function in this way)
 - [x] Tested with 大辞林
 - [ ] Add a zsh/python script for processing everything automatically
 - [ ] Better sorting for multiple entries
-- [ ] Test more dictionaries 
+- [ ] Test more dictionaries
 - [ ] Improve performance (low priority)
 - [ ] Make it possible to look up suffixes (stuff like -好き; low priority)
 - [ ] Make it possible to look up phrases with `=` in their key (It's probably another weird EPWING thing; low priority)
 
 *Note*: this process was tested using スーパー大辞林, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
 
-## Miscellaneous
 
-### Another way to convert epwing
+## Another way to convert epwing
 
-We can also use the noj format as an intermediary between the EPWING dictionary and the tab file. 
+We can also use the noj format as an intermediary between the EPWING dictionary and the tab file.
 
 **Steps:**
 
@@ -113,9 +123,26 @@ We can also use the noj format as an intermediary between the EPWING dictionary 
 3. Tab2Opf (mine or https://github.com/apeyser/tab2opf)
 4. kindlegen + calibre
 
+
+## Miscellaneous
+
+### Something isn't working!
+
+Open an [issue](https://github.com/olety/epwing2kindle/issues) on github, I'm checking this page quite regularly and will respond as soon as I can.
+
+Also, please check closed issues before opening a new one, maybe your problem was already solved there.
+
+### Kindlegen is throwing weird warnings!
+
+If it actually produces the .mobi file at the end those warnings can be ignored; try putting the resulting dictionary on your kindle first and check if you can look up words. If not, open an [issue](https://github.com/olety/epwing2kindle/issues) :)
+
+### I'm on Windows and having trouble installing the python requirements
+
+Check issue #1 - you may have to install [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2017) to get everything working.
+
 ### Why would you ever do this? Kindle offers free builtin dictionaries!
 
-デジタル大辞泉　provided with Kindle doesn't have pitch accent marks.
+デジタル大辞泉 provided with Kindle doesn't have pitch accent marks.
 
 ### Shoutouts
 
