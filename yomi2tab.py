@@ -117,7 +117,7 @@ def process_folder(foldername, simplify):
         logging.debug(f'Processing file {file_path}')
 
         logging.debug('Reading the json...')
-        df = pd.read_json(file_path)
+        df = pd.read_json(file_path, encoding='utf-8')
         logging.debug(f'Successfully read the file {file_path}...')
 
         logging.debug('Selecting the correct columns...')
@@ -186,8 +186,8 @@ if __name__ == '__main__':
                         'archaic readings, which makes the resulting definition'
                         ' easier to read.')
     # Destination
-    parser.add_argument('-o', '--output', type=argparse.FileType('w'), nargs='?',
-                        help='Output file path. Default behaviour: '
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+                        nargs='?', help='Output file path. Default behaviour: '
                         'infers the name.', metavar='output_file', default=None)
 
     parser.add_argument('-v', '--verbose', action='store_true',
@@ -223,7 +223,7 @@ if __name__ == '__main__':
     if not output_file:
         logging.debug('Trying to infer the dictionary name...')
         try:
-            with open(os.path.join(args.folder, 'index.json')) as f:
+            with open(os.path.join(args.folder, 'index.json'), encoding='utf-8') as f:
                 index_json = json.load(f)
                 output_file = f'{index_json["title"]}.tab'
         except:
