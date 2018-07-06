@@ -9,6 +9,7 @@
 # Version history
 # v0.1 (04.02.2018) Basic functionalities
 # v0.2 (07.03.2018) Added proper katakana/kanji words processing, simplify mode
+# v0.2a (06.07.2018) Fixed a windows-related encoding issue  (#1 on github)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -25,7 +26,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-VERSION = '0.2'
+VERSION = '0.2a'
 
 import pprint
 import pandas as pd
@@ -186,7 +187,7 @@ if __name__ == '__main__':
                         'archaic readings, which makes the resulting definition'
                         ' easier to read.')
     # Destination
-    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+    parser.add_argument('-o', '--output', type=argparse.FileType('w', encoding='utf-8'),
                         nargs='?', help='Output file path. Default behaviour: '
                         'infers the name.', metavar='output_file', default=None)
 
