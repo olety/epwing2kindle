@@ -87,7 +87,7 @@ This repository provides a japanese-specific tab2opf tool with some improvements
 kindlegen opf/mydict.opf
 ```
 
-In order to generate a .mobi dictionary from OPF, you can use a tool called `kindlegen` that's provided by amazon. It may take a while to convert everything but doesn't require any extra work.
+In order to generate a .mobi dictionary from OPF, you can use a tool called [kindlegen](https://www.amazon.com/gp/feature.html?docId=1000765211) that's provided by amazon. It may take a while to convert everything but doesn't require any extra work.
 
 After you've generated a .mobi dictionary, you can import it into [calibre](https://calibre-ebook.com) to edit the metadata, add a cover picture and send it to kindle.
 
