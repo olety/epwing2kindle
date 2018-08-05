@@ -108,7 +108,7 @@ After you've generated a .mobi dictionary, you can import it into [calibre](http
 - [ ] Make it possible to look up suffixes (stuff like -好き; low priority)
 - [ ] Make it possible to look up phrases with `=` in their key (It's probably another weird EPWING thing; low priority)
 
-*Note*: this process was tested using スーパー大辞林, using it with other dictionaries like 新明解国語辞典 should still work but some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
+*Note*: this process was tested using スーパー大辞林, and while using it with other dictionaries (full list [here](https://github.com/FooSoft/yomichan-import)) should still work some unexpected problems may arise. If you manage to successfully import another dictionary using this repo, please add a photo of your final result to the images folder via a pull request.
 
 
 ## Another way to convert epwing
