@@ -167,7 +167,7 @@ def process_folder(foldername, simplify):
     # Dropping empty strings
     logging.debug('Deleting entries with empty headwords.')
     result.replace('', pd.np.nan, inplace=True)
-    result.dropna(subset=['word'], inplace=True)
+    result.dropna(subset=['word', 'def'], inplace=True)
 
     # Deleting dupes
     logging.debug('Deleting duplicates.')
