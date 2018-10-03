@@ -10,7 +10,7 @@
 # v0.1 (04.02.2018) Basic functionalities
 # v0.2 (07.03.2018) Added proper katakana/kanji words processing, simplify mode
 # v0.2a (06.07.2018) Fixed a windows-related encoding issue  (#1 on github)
-# v0.2a (10.03.2018) Fixed an issue with 明鏡 where some words were missing their headword
+# v0.2b (10.03.2018) Fixed an issue with 明鏡 where some words were missing their headword
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
