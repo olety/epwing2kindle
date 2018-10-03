@@ -10,6 +10,7 @@
 # v0.1 (04.02.2018) Basic functionalities
 # v0.2 (07.03.2018) Added proper katakana/kanji words processing, simplify mode
 # v0.2a (06.07.2018) Fixed a windows-related encoding issue  (#1 on github)
+# v0.2a (10.03.2018) Fixed an issue with 明鏡 where some words were missing their headword
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -26,7 +27,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-VERSION = '0.2a'
+VERSION = '0.2b'
 
 import pprint
 import pandas as pd
@@ -150,19 +151,28 @@ def process_folder(foldername, simplify):
         # Making mixed kanji/kanakana words display properly
         df = df.apply(process_katakana_kanji, axis=1)
         df['word'] = df['word'].apply(clean_word_starts)
-        # Deleting dupes
-        logging.debug('Deleting duplicates.')
-        df.drop_duplicates(inplace=True)
+
         logging.debug('Appending the dataframe to the result array.')
         result.append(df)
 
     # Concatenating the result and returning it
     logging.debug('Concatenating the result array.')
     result = pd.concat(result)
+
     # Some extra changes due to how tab2opf treats newlines
     logging.debug('Changing the newlines from \\n -> \\\\n '
                   'so tab2opf can read them.')
     result['def'] = result['def'].str.replace('\n', '\\n')
+
+    # Dropping empty strings
+    logging.debug('Deleting entries with empty headwords.')
+    result.replace('', pd.np.nan, inplace=True)
+    result.dropna(subset=['word'], inplace=True)
+
+    # Deleting dupes
+    logging.debug('Deleting duplicates.')
+    result.drop_duplicates(inplace=True)
+
     # Maybe use a special sort for japanese characters?
     result = result.sort_values(by='word').reset_index()
     logging.debug('Returning the result dataframe.')
